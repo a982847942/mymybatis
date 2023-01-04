@@ -1,5 +1,7 @@
 package nuaa.edu.mybatis.binding;
 
+import nuaa.edu.mybatis.session.SqlSession;
+
 import java.io.Serializable;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -19,8 +21,14 @@ public class MapperProxyFactory<T> {
         this.mapperInterface = mapperInterface;
     }
 
-    public T newInstance(Map<String,String> sqlSession){
+    //    public T newInstance(Map<String,String> sqlSession){
+//        final MapperProxy<T> mapperProxy = new MapperProxy<>(sqlSession, mapperInterface);
+//        return (T)Proxy.newProxyInstance(mapperInterface.getClassLoader(),new Class[]{mapperInterface},mapperProxy);
+//    }
+    @SuppressWarnings("unchecked")
+    public T newInstance(SqlSession sqlSession) {
         final MapperProxy<T> mapperProxy = new MapperProxy<>(sqlSession, mapperInterface);
-        return (T)Proxy.newProxyInstance(mapperInterface.getClassLoader(),new Class[]{mapperInterface},mapperProxy);
+        return (T) Proxy.newProxyInstance(mapperInterface.getClassLoader(), new Class[]{mapperInterface}, mapperProxy);
     }
+
 }

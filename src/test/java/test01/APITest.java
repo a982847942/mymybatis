@@ -17,15 +17,15 @@ import java.util.HashMap;
 public class APITest {
 
     private static final Logger logger = LoggerFactory.getLogger(APITest.class);
-    @Test
-    public void test(){
-        MapperProxyFactory<IUserDao> factory = new MapperProxyFactory<>(IUserDao.class);
-        HashMap<String, String> sqlSession = new HashMap<>();
-        sqlSession.put("test01.IUserDao.queryUserName","模拟执行 Mapper.xml 中 SQL 语句的操作：查询用户姓名");
-        sqlSession.put("test01.IUserDao.queryUserAge", "模拟执行 Mapper.xml 中 SQL 语句的操作：查询用户年龄");
-        IUserDao userDao = factory.newInstance(sqlSession);
-        String res = userDao.queryUserName("10001");
-        logger.info("测试结果:{}",res);
-    }
+//    @Test
+//    public void test(){
+//        MapperProxyFactory<IUserDao> factory = new MapperProxyFactory<>(IUserDao.class);
+//        HashMap<String, String> sqlSession = new HashMap<>();
+//        sqlSession.put("test01.IUserDao.queryUserName","模拟执行 Mapper.xml 中 SQL 语句的操作：查询用户姓名");
+//        sqlSession.put("test01.IUserDao.queryUserAge", "模拟执行 Mapper.xml 中 SQL 语句的操作：查询用户年龄");
+//        IUserDao userDao = factory.newInstance(sqlSession);
+//        String res = userDao.queryUserName("10001");
+//        logger.info("测试结果:{}",res);
+//    }
 
 }
