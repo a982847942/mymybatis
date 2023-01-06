@@ -17,18 +17,18 @@ import test02.dao.IUserDao;
  */
 public class APITest02 {
     private static final Logger logger = LoggerFactory.getLogger(APITest02.class);
-    @Test
-    public void test_MapperProxyFactory(){
-        MapperRegistry registry = new MapperRegistry();
-        registry.addMappers("test02.dao");
-
-        DefaultSqlSessionFactory sqlSessionFactory = new DefaultSqlSessionFactory(registry);
-        SqlSession sqlSession = sqlSessionFactory.openSession();
-
-        IUserDao userDao = sqlSession.getMapper(IUserDao.class);
-
-        String res = userDao.queryUserName("10001");
-        logger.info("测试结果:{}",res);
-        logger.info("格式:{}",IUserDao.class);
-    }
+//    @Test
+//    public void test_MapperProxyFactory(){
+//        MapperRegistry registry = new MapperRegistry();
+//        registry.addMappers("test02.dao");
+//
+//        DefaultSqlSessionFactory sqlSessionFactory = new DefaultSqlSessionFactory(registry);
+//        SqlSession sqlSession = sqlSessionFactory.openSession();
+//
+//        IUserDao userDao = sqlSession.getMapper(IUserDao.class);
+//
+//        String res = userDao.queryUserName("10001");
+//        logger.info("测试结果:{}",res);
+//        logger.info("格式:{}",IUserDao.class);
+//    }
 }

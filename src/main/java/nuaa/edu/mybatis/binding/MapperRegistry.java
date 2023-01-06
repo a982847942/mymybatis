@@ -1,6 +1,7 @@
 package nuaa.edu.mybatis.binding;
 
 import cn.hutool.core.lang.ClassScanner;
+import nuaa.edu.mybatis.session.Configuration;
 import nuaa.edu.mybatis.session.SqlSession;
 
 import java.util.HashMap;
@@ -14,6 +15,13 @@ import java.util.Set;
  * @Created by brain
  */
 public class MapperRegistry {
+    private Configuration config;
+
+    public MapperRegistry(Configuration config) {
+        this.config = config;
+    }
+
+
 
     /**
      * 将已添加的映射器代理加入到 HashMap
