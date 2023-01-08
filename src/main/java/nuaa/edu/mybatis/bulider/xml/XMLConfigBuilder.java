@@ -1,21 +1,23 @@
 package nuaa.edu.mybatis.bulider.xml;
 
 import nuaa.edu.mybatis.bulider.BaseBuilder;
+import nuaa.edu.mybatis.datasource.DataSourceFactory;
 import nuaa.edu.mybatis.io.Resources;
+import nuaa.edu.mybatis.mapping.BoundSql;
+import nuaa.edu.mybatis.mapping.Environment;
 import nuaa.edu.mybatis.mapping.MappedStatement;
 import nuaa.edu.mybatis.mapping.SqlCommandType;
 import nuaa.edu.mybatis.session.Configuration;
+import nuaa.edu.mybatis.transaction.TransactionFactory;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 import org.xml.sax.InputSource;
 
+import javax.sql.DataSource;
 import java.io.Reader;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -49,6 +51,8 @@ public class XMLConfigBuilder extends BaseBuilder {
      */
     public Configuration parse() {
         try {
+            // 环境
+            environmentsElement(root.element("environments"));
             //解析映射器
             mapperElement(root.element("mappers"));
         }catch (Exception e){
@@ -89,13 +93,62 @@ public class XMLConfigBuilder extends BaseBuilder {
                 String msId = namespace + "." + id;
                 String nodeName = node.getName();
                 SqlCommandType sqlCommandType = SqlCommandType.valueOf(nodeName.toUpperCase(Locale.ENGLISH));
-                MappedStatement mappedStatement = new MappedStatement.Builder(configuration, msId, sqlCommandType, parameterType, resultType, sql, parameter).build();
+
+                BoundSql boundSql = new BoundSql(sql, parameter, parameterType, resultType);
+
+                MappedStatement mappedStatement = new MappedStatement.Builder(configuration, msId, sqlCommandType,boundSql).build();
                 // 添加解析 SQL
                 configuration.addMappedStatement(mappedStatement);
             }
 
             // 注册Mapper映射器
             configuration.addMapper(Resources.classForName(namespace));
+        }
+    }
+    /**
+     * <environments default="development">
+     * <environment id="development">
+     * <transactionManager type="JDBC">
+     * <property name="..." value="..."/>
+     * </transactionManager>
+     * <dataSource type="POOLED">
+     * <property name="driver" value="${driver}"/>
+     * <property name="url" value="${url}"/>
+     * <property name="username" value="${username}"/>
+     * <property name="password" value="${password}"/>
+     * </dataSource>
+     * </environment>
+     * </environments>
+     */
+    private void environmentsElement(Element context) throws Exception {
+        //默认的环境
+        String environment = context.attributeValue("default");
+
+        //获取配置的环境列表
+        List<Element> elementList = context.elements("environment");
+        for (Element element : elementList) {
+            String id = element.attributeValue("id");
+            //使用配置的环境
+            if (environment.equals(id)){
+                //事务管理器
+                TransactionFactory transactionFactory = (TransactionFactory)typeAliasRegistry.resolveAlias(element.element("transactionManager").attributeValue("type")).newInstance();
+
+                //数据源
+                Element dataSourceElement = element.element("dataSource");
+                DataSourceFactory dataSourceFactory = (DataSourceFactory)typeAliasRegistry.resolveAlias(dataSourceElement.attributeValue("type")).newInstance();
+                List<Element> propertyList = dataSourceElement.elements("property");
+                Properties props = new Properties();
+                for (Element property : propertyList) {
+                    props.setProperty(property.attributeValue("name"),property.attributeValue("value"));
+                }
+                dataSourceFactory.setProperties(props);
+                DataSource dataSource = dataSourceFactory.getDataSource();
+                //创建环境
+                Environment.Builder environmentBuilder = new Environment.Builder(id)
+                        .transactionFactory(transactionFactory)
+                        .dataSource(dataSource);
+                configuration.setEnvironment(environmentBuilder.build());
+            }
         }
     }
 }
