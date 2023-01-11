@@ -2,6 +2,8 @@ package nuaa.edu.mybatis.session;
 
 import nuaa.edu.mybatis.binding.MapperRegistry;
 import nuaa.edu.mybatis.datasource.druid.DruidDataSourceFactory;
+import nuaa.edu.mybatis.datasource.pooled.PooledDataSourceFactory;
+import nuaa.edu.mybatis.datasource.unpooled.UnpooledDataSourceFactory;
 import nuaa.edu.mybatis.mapping.Environment;
 import nuaa.edu.mybatis.mapping.MappedStatement;
 import nuaa.edu.mybatis.transaction.jdbc.JdbcTransactionFactory;
@@ -34,6 +36,8 @@ public class Configuration {
     public Configuration() {
         typeAliasRegistry.registerAlias("JDBC", JdbcTransactionFactory.class);
         typeAliasRegistry.registerAlias("DRUID", DruidDataSourceFactory.class);
+        typeAliasRegistry.registerAlias("UNPOOLED", UnpooledDataSourceFactory.class);
+        typeAliasRegistry.registerAlias("POOLED", PooledDataSourceFactory.class);
     }
 
     public void addMappers(String packageName) {
